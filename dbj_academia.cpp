@@ -52,13 +52,13 @@ namespace dbj {
         char * data{};
         size_t size{};
 
-        S(): data(nullptr), size(0)
+        S() noexcept  : data(nullptr), size(0)
         {
             printf("\n%5sconstructed by default S() nullptr", "");
         }
 
         // WARNING: never forget the initializer list
-        explicit S(const char * str_ ) :
+        explicit S(const char * str_ ) noexcept :
             data(allocate_data(str_)),
             size(strlen(str_))
         {
@@ -71,17 +71,17 @@ namespace dbj {
 
         // WARNING: it is important
         // to initialize the members, before anything else
-        S(S&& other) 
-            : size(other.size),
-            data(/*allocate_data*/(other.data))
+        S(S&& other) noexcept 
+            : size(move(other.size)),
+            data(move(other.data))
         {
             printf("\n%5sconstructed %s ( S && S{}) ,  data: '%s'", "", __func__, data);
-            // just move from the other, data is already sorted
-            // move(other);
+            // CRITICAL: this is signal to the destructor of the other
+            // NOT to attempt freeing the moved from data
             other.data = nullptr;
         }
         /* */
-        S(const S& other_)
+        S(const S& other_) noexcept
             : size(other_.size),
             data(allocate_data(other_.data))
         {
@@ -119,8 +119,14 @@ int main(int, char**) {
         assert(3 == x.size);
     }
     {
-        dbj::S x("LEFT"), y("RIGHT");
+        dbj::S x("White"), y("Black");
         swap(x, y);
+        //assert(0xF == x.size);
+    }
+    {
+        auto xp = new dbj::S("Red"), 
+             yp = new dbj::S("Green");
+        swap(xp, yp);
         //assert(0xF == x.size);
     }
     return 42;
