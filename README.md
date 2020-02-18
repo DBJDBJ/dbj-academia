@@ -1,5 +1,13 @@
 # dbj-academia
+
+(c) 2020 by dbj@dbj.org, see the [LICENSE](./LICENSE) attached.
+
 ## teaching fundamentals
 Supporting code
 
-Note : vld.h / vld.lib are from "Visual Leak Detector", being used.
+| file | explanation |
+| --- | --- |
+| [move_and_swap.cpp](./move_and_swap.cpp) | Fundamentals of moving ans swapping. Also intricacies of proper class data members coding |
+
+Note : vld.h / vld.lib are from ["Visual Leak Detector"](https://kinddragon.github.io/vld/), being used.
+
