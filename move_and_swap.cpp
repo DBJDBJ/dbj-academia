@@ -6,16 +6,10 @@
 #include <include/vld.h>
 
 // using namespace std;
+///----------------------------------------------------
 namespace dbj {
     struct S;
 
-    ///----------------------------------------------------
-    // synopsis for std::move
-    template<typename T>
-    inline T&& move(T&& obj)
-    {
-        return (T&&)obj;        // return obj as an rvalue
-    }
     ///----------------------------------------------------
     extern "C" {
         inline char * allocate_data( const char * data_ ) {
@@ -31,6 +25,20 @@ namespace dbj {
             ip_ = nullptr;
         }
     }
+    ///----------------------------------------------------
+    // move and swaps are in here so that we can follow 
+    // ltno them through the debugger session
+
+    // synopsis for std::move
+    template<typename T>
+    inline T&& move(T&& obj)
+    {
+        return (T&&)obj; // return obj as an rvalue
+    }
+    /// pointer swapping
+    /// actualy swaps just the 
+    /// values pointers are
+    /// pointing to
     template<typename T>
     inline void swap(T* a, T* b) {
         T t = move(*a);
@@ -45,38 +53,45 @@ namespace dbj {
         b = move(t);
     }
     ///----------------------------------------------------
-    struct S final {
-        // WARNING: this defines the oder of initialization
+    /// there are better designs
+    /// S is like it is for teaching purposes
+    struct S final 
+    {
+        // POINT: order here rules the oder of initialization
         // in the constructor initializer list
         // not the oder in the list itself!
         char * data{};
         size_t size{};
 
-        S() noexcept  : data(nullptr), size(0)
+        S() noexcept  : 
+            size(0),            // initialized first
+            data(nullptr)       // initialized second
         {
-            printf("\n%5sconstructed by default S() nullptr", "");
+            printf("\n%5sconstructed by default S() data:nullptr", "");
         }
 
-        // WARNING: never forget the initializer list
+        // POINT: never forget the ctor initializer list
         explicit S(const char * str_ ) noexcept :
             data(allocate_data(str_)),
             size(strlen(str_))
         {
-            printf("\n%5sconstructed S() data: '%s'", "", data);
+            printf("\n%5sconstructed with S(const char *) data: '%s'", "", data);
         }
+
         ~S() {
-            printf("\n%5sdestructed ~S() data: '%s'", "", data);
+            printf("\n%5sdestructed ~S() with data: '%s'", "", data);
             if (data) { free_data(data), data = nullptr; size = 0; }
         }
 
-        // WARNING: it is important
+        // POINT: it is important
         // to initialize the members, before anything else
         S(S&& other) noexcept 
             : size(move(other.size)),
             data(move(other.data))
         {
-            printf("\n%5sconstructed %s ( S && S{}) ,  data: '%s'", "", __func__, data);
-            // CRITICAL: this is signal to the destructor of the other
+            printf("\n%5sconstructed with S( S && S{}) ,  data: '%s'", "", data);
+            // CRITICAL: this is signal to the destructor 
+            // of the other object
             // NOT to attempt freeing the moved from data
             other.data = nullptr;
         }
@@ -87,9 +102,9 @@ namespace dbj {
         {
             printf("\n%5sconstructed  S(const S& other_), data: '%s'", "", data);
         }
-        /// WARNING: copy assignment operator is
-        // required by the swap's bellow
-        constexpr S& operator=(const S&) = default;
+        /// POINT: copy assignment operator is
+        /// required by the swap's bellow
+        /// constexpr S& operator=(const S&) = default;
 
         friend void swap(S* a, S* b) {
             printf("\nswap( S * a, S * b)");
@@ -105,29 +120,37 @@ namespace dbj {
 
     };
 } // dbj
+
+using namespace dbj;
 ///----------------------------------------------------
-dbj::S return_s(dbj::S s_)
+/// value argument
+/// return by value
+S return_s(S s_)
 {
-    return s_; // move 
+    return s_; // moving 
 }
-///----------------------------------------------------
 
 ///----------------------------------------------------
 int main(int, char**) {
     {
-        dbj::S x = return_s(dbj::S("ABC"));
+        S x = return_s(S("ABC"));
         assert(3 == x.size);
     }
     {
-        dbj::S x("White"), y("Black");
+        S x("White"), y("Black");
         swap(x, y);
         //assert(0xF == x.size);
     }
     {
-        auto xp = new dbj::S("Red"), 
-             yp = new dbj::S("Green");
+        /// POINT: swap implementation assures
+        /// xp and yp are not changed
+        /// just the values they are pointing to
+        auto xp = new S("Red"), yp = new S("Green");
+        
         swap(xp, yp);
-        //assert(0xF == x.size);
+
+        delete xp; delete yp;
     }
     return 42;
  }
+///----------------------------------------------------
