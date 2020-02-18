@@ -9,5 +9,6 @@ Supporting code
 | --- | --- |
 | [move_and_swap.cpp](./move_and_swap.cpp) | Fundamentals of moving ans swapping. Also intricacies of proper class data members coding |
 
-Note : vld.h / vld.lib are from ["Visual Leak Detector"](https://kinddragon.github.io/vld/), being used.
+Note : vld.h / vld.lib are from ["Visual Leak Detector"](https://kinddragon.github.io/vld/), being used. 
+Go to the Wiki page and read carefully the "Using..." section.
 
