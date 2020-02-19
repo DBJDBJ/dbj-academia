@@ -4,7 +4,7 @@
 #include <cassert>
 #include <utility>
 // #include <algorithm>
-//  #include <vld.h>
+#include "C:\\Program Files (x86)\\Visual Leak Detector\\include\\vld.h"
 
 // using namespace std;
 ///----------------------------------------------------
@@ -27,8 +27,6 @@ namespace dbj {
         }
     }
     ///----------------------------------------------------
-    ///----------------------------------------------------
-    ///----------------------------------------------------
     /// there are better designs
     /// Mytype is like it is for teaching purposes
     struct Mytype final 
@@ -38,34 +36,29 @@ namespace dbj {
         // in the constructor initializer list
         // not the oder in the list itself!
         value_type * data{};
-        size_t size{};
 
-        Mytype() noexcept  : 
-            size(0),            // initialized first
-            data(nullptr)       // initialized second
+        Mytype() noexcept 
         {
             printf("\n%5sconstructed by default Mytype() data:nullptr", "");
         }
 
         // POINT: never forget the ctor initializer list
         explicit Mytype(const char * str_ ) noexcept :
-            data(allocate_data(str_)),
-            size(strlen(str_))
+            data(allocate_data(str_))
         {
             printf("\n%5sconstructed with Mytype(const char *) data: '%s'", "", data);
         }
 
-        ~Mytype() {
+        ~Mytype() noexcept {
             printf("\n%5sdestructed ~Mytype() with data: '%s'", "", data);
             /* if (data) */
-            { free_data(data); /*data = nullptr;*/ size = 0; }
+            { free_data(data); /*data = nullptr;*/ }
         }
 
         // POINT: it is important
         // to initialize the members, before anything else
         Mytype(Mytype&& other) noexcept 
-            : size(std::move(other.size)),
-            data(std::move(other.data))
+            : data(std::move(other.data))
         {
             printf("\n%5sconstructed with Mytype( Mytype && Mytype{}) ,  data: '%s'", "", data);
             // CRITICAL: this is signal to the destructor 
@@ -75,8 +68,7 @@ namespace dbj {
         }
         /* */
         Mytype(const Mytype& other_) noexcept
-            : size(other_.size),
-            data(allocate_data(other_.data))
+            : data(allocate_data(other_.data))
         {
             printf("\n%5sconstructed  Mytype(const Mytype& other_), data: '%s'", "", data);
         }
@@ -88,10 +80,9 @@ namespace dbj {
         // swap is for swapping the values of this type
         // NOTE: std::iter_swap will call into here
         // just make sure ADL is respected
-        friend void swap(Mytype& a, Mytype& b) {
+        friend void swap(Mytype& a, Mytype& b) noexcept {
            printf("\n swap( Mytype & a, Mytype & b)");
            std::swap(a.data, b.data);
-           std::swap(a.size, b.size);
         }
 
     };
@@ -153,12 +144,18 @@ auto udt_iterator_swapping()
     delete xp; delete yp;
 }
 
+void pause () {
+    system("@echo.");
+    system("@pause");
+    system("@cls");
+    system("@echo.");
+}
 ///----------------------------------------------------
 int main(int, char**) {
-    // move_shenanigans();
-   udt_value_swapping();
-   udt_pointer_swapping();
-   udt_iterator_swapping();
+   move_shenanigans(); pause();
+   udt_value_swapping(); pause();
+   udt_pointer_swapping();pause();
+   udt_iterator_swapping();pause();
     return 42;
  }
 ///----------------------------------------------------

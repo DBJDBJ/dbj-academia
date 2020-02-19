@@ -12,7 +12,9 @@
                 "/Zi",
                 "/Fe:",
                 "academia_dbg.exe",
-                "move_and_swap.cpp" 
+                "move_and_swap.cpp",
+                "/link",
+                "/LIBPATH:C:\\Program Files (x86)\\Visual Leak Detector\\lib\\Win64"
             ],
             "group": {
                 "kind": "build",
