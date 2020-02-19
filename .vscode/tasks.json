@@ -1,0 +1,48 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "msvc debug build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/MDd",
+                "/-D_HAS_EXCEPTIONS=0",
+                "/Zi",
+                "/Fe:",
+                "academia_dbg.exe",
+                "move_and_swap.cpp" 
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "msvc release build",
+            "type": "shell",
+            "command": "cl.exe",
+            "args": [
+                "/std:c++17",
+                "/MDd",
+                "/-D_HAS_EXCEPTIONS=0",
+                "/Fe:",
+                "academia.exe",
+                "move_and_swap.cpp"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always"
+            },
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}

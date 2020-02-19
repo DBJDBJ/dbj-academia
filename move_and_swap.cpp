@@ -1,8 +1,9 @@
+#include <string.h>
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
-// #include <utility>
-#include <algorithm>
+#include <utility>
+// #include <algorithm>
 #include <include/vld.h>
 
 // using namespace std;
@@ -26,32 +27,41 @@ namespace dbj {
         }
     }
     ///----------------------------------------------------
-    // move and swaps are in here so that we can follow 
+    template <class _Ty, class>
+    void swap(_Ty& _Left, _Ty& _Right) 
+        // noexcept(is_nothrow_move_constructible_v<_Ty>&& is_nothrow_move_assignable_v<_Ty>) 
+    {
+        _Ty _Tmp = std:: move(_Left);
+        _Left = std:: move(_Right);
+        _Right = std:: move(_Tmp);
+    }
+    ///----------------------------------------------------
+    // std::move and swaps are in here so that we can follow 
     // ltno them through the debugger session
 
-    // synopsis for std::move
-    template<typename T>
-    inline T&& move(T&& obj)
-    {
-        return (T&&)obj; // return obj as an rvalue
-    }
+    // synopsis for std::std::move
+    //template<typename T>
+    //inline T&& std::move(T&& obj)
+    //{
+    //    return (T&&)obj; // return obj as an rvalue
+    //}
     /// pointer swapping
     /// actualy swaps just the 
     /// values pointers are
     /// pointing to
-    template<typename T>
-    inline void swap(T* a, T* b) {
-        T t = move(*a);
-        *a = move(*b);
-        *b = move(t);
-    }
+    //template<typename T>
+    //inline void swap(T* a, T* b) {
+    //    T * t = std::move(a);
+    //    a = std::move(b);
+    //    b = std::move(t);
+    //}
 
-    template<typename T>
-    inline void swap(T& a, T& b) {
-        T t = move(a);
-        a = move(b);
-        b = move(t);
-    }
+    //template<typename T>
+    //inline void swap(T& a, T& b) {
+    //    T t = std::move(a);
+    //    a = std::move(b);
+    //    b = std::move(t);
+    //}
     ///----------------------------------------------------
     /// there are better designs
     /// S is like it is for teaching purposes
@@ -86,8 +96,8 @@ namespace dbj {
         // POINT: it is important
         // to initialize the members, before anything else
         S(S&& other) noexcept 
-            : size(move(other.size)),
-            data(move(other.data))
+            : size(std::move(other.size)),
+            data(std::move(other.data))
         {
             printf("\n%5sconstructed with S( S && S{}) ,  data: '%s'", "", data);
             // CRITICAL: this is signal to the destructor 
@@ -103,20 +113,20 @@ namespace dbj {
             printf("\n%5sconstructed  S(const S& other_), data: '%s'", "", data);
         }
         /// POINT: copy assignment operator is
-        /// required by the swap's bellow
-        /// constexpr S& operator=(const S&) = default;
+        /// required by the swap's
+        constexpr S& operator=(const S&) = default;
 
-        friend void swap(S* a, S* b) {
-            printf("\nswap( S * a, S * b)");
-            swap(a->data, b->data);
-            swap( a->size, b->size );
-        }
+        //friend void swap(S* a, S* b) {
+        //    printf("\nswap( S * a, S * b)");
+        //    swap(a->data, b->data);
+        //    swap( a->size, b->size );
+        //}
 
-        friend void swap(S& a, S& b) {
-            printf("\n swap( S & a, S & b)");
-            swap(a.data, b.data);
-            swap(a.size, b.size);
-        }
+        //friend void swap(S& a, S& b) {
+        //    printf("\n swap( S & a, S & b)");
+        //    swap(a.data, b.data);
+        //    swap(a.size, b.size);
+        //}
 
     };
 } // dbj
@@ -129,28 +139,38 @@ S return_s(S s_)
 {
     return s_; // moving 
 }
+auto t1()
+{
+    S x = return_s(S("ABC"));
+    assert(3 == x.size);
+}
+auto t2()
+{
+    S x("White"), y("Black");
+    std::swap(x, y);
+    //assert(0xF == x.size);
+}
+auto t3()
+{
+    /// POINT: swap implementation assures
+    /// xp and yp are not changed
+    /// just the values they are pointing to
+    auto xp = new S("Red"), yp = new S("Green");
+
+    S* xp_before = xp;
+    S* yp_before = yp;
+
+    std::swap(xp, yp);
+
+    auto same_x = xp_before == xp;
+    auto same_y = yp_before == yp;
+
+    delete xp; delete yp;
+}
 
 ///----------------------------------------------------
 int main(int, char**) {
-    {
-        S x = return_s(S("ABC"));
-        assert(3 == x.size);
-    }
-    {
-        S x("White"), y("Black");
-        swap(x, y);
-        //assert(0xF == x.size);
-    }
-    {
-        /// POINT: swap implementation assures
-        /// xp and yp are not changed
-        /// just the values they are pointing to
-        auto xp = new S("Red"), yp = new S("Green");
-        
-        swap(xp, yp);
-
-        delete xp; delete yp;
-    }
+    t3();
     return 42;
  }
 ///----------------------------------------------------
