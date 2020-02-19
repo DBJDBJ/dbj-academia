@@ -5,3 +5,7 @@ x64
 .git
 *.filters
 *.user
+*.ilk
+*.pdb
+*.exe
+*.obj

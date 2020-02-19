@@ -155,7 +155,8 @@ auto t3()
     /// POINT: swap implementation assures
     /// xp and yp are not changed
     /// just the values they are pointing to
-    auto xp = new S("Red"), yp = new S("Green");
+    S* xp = new S("Red");
+    S* yp = new S("Green");
 
     S* xp_before = xp;
     S* yp_before = yp;
