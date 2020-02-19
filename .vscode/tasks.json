@@ -8,7 +8,7 @@
             "args": [
                 "/std:c++17",
                 "/MDd",
-                "/-D_HAS_EXCEPTIONS=0",
+                "-D_HAS_EXCEPTIONS=0",
                 "/Zi",
                 "/Fe:",
                 "academia_dbg.exe",
@@ -30,7 +30,7 @@
             "args": [
                 "/std:c++17",
                 "/MDd",
-                "/-D_HAS_EXCEPTIONS=0",
+                "-D_HAS_EXCEPTIONS=0",
                 "/Fe:",
                 "academia.exe",
                 "move_and_swap.cpp"
