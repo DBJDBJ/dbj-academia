@@ -27,50 +27,7 @@ namespace dbj {
         }
     }
     ///----------------------------------------------------
-    template <class _Ty>
-    _NODISCARD constexpr std::remove_reference_t<_Ty>&& 
-    move(_Ty&& _Arg) 
-    noexcept { // forward _Arg as movable
-        return static_cast<std::remove_reference_t<_Ty>&&>(_Arg);
-    }
-    template <class _Ty, class>
-    void swap(_Ty& _Left, _Ty& _Right) 
-        noexcept(
-            std::is_nothrow_move_constructible_v<_Ty> && 
-            std::is_nothrow_move_assignable_v<_Ty>
-        ) 
-    {
-        _Ty _Tmp = std:: move(_Left);
-        _Left = std:: move(_Right);
-        _Right = std:: move(_Tmp);
-    }
     ///----------------------------------------------------
-    // std::move and swaps are in here so that we can follow 
-    // ltno them through the debugger session
-
-    // synopsis for std::std::move
-    //template<typename T>
-    //inline T&& std::move(T&& obj)
-    //{
-    //    return (T&&)obj; // return obj as an rvalue
-    //}
-    /// pointer swapping
-    /// actualy swaps just the 
-    /// values pointers are
-    /// pointing to
-    //template<typename T>
-    //inline void swap(T* a, T* b) {
-    //    T * t = std::move(a);
-    //    a = std::move(b);
-    //    b = std::move(t);
-    //}
-
-    //template<typename T>
-    //inline void swap(T& a, T& b) {
-    //    T t = std::move(a);
-    //    a = std::move(b);
-    //    b = std::move(t);
-    //}
     ///----------------------------------------------------
     /// there are better designs
     /// Mytype is like it is for teaching purposes
@@ -127,17 +84,10 @@ namespace dbj {
         /// required by the swap's
         constexpr Mytype& operator=(const Mytype&) = default;
 
-        // use iter_swap to clearly show the intent
-        // iter_swap is for swapping the pointers to the type
-        friend void iter_swap(Mytype* a, Mytype* b) {
-           printf("\nswap( Mytype * a, Mytype * b)");
-           using std::swap;
-           swap(a->data, b->data);
-           swap( a->size, b->size );
-        }
-
         // use swap to clearly show the intent
-        // swap is for swapping the value of the type
+        // swap is for swapping the values of this type
+        // NOTE: std::iter_swap will call into here
+        // just make sure ADL is respected
         friend void swap(Mytype& a, Mytype& b) {
            printf("\n swap( Mytype & a, Mytype & b)");
            std::swap(a.data, b.data);
@@ -181,9 +131,9 @@ auto udt_value_swapping()
 auto udt_pointer_swapping()
 {
     Mytype * xp = new Mytype("White"), * yp = new Mytype("Black");
-  // but than make compiler use your implementation
-  // effectively doing
-  // swap( Mytype & * Mytype & * )  
+
+  // effectively calling
+  // swap( Mytype & , Mytype &  )  
     using std::swap;
     swap( *xp, *yp );
 
@@ -192,18 +142,14 @@ auto udt_pointer_swapping()
 /// -------------------------------------------------------------
 auto udt_iterator_swapping()
 {
-    /// POINT: iter_swap udt implementation 
-    /// assures
-    /// xp and yp are not changed
-    /// just the values they are pointing to
     Mytype* xp = new Mytype("Red");
     Mytype* yp = new Mytype("Green");
-
     // superfluous
     using std::iter_swap ;
-    // using Mytype swap
+    // iter_swap is calling using Mytype swap
     std::iter_swap(xp, yp);
-
+    /// xp and yp are not changed
+    /// just the values they are pointing to
     delete xp; delete yp;
 }
 
