@@ -30,7 +30,8 @@ namespace dbj {
         // not the oder in the list itself!
         value_type * data{};
 
-        Mytype() noexcept 
+        /// CONSTRUCTING
+        Mytype() noexcept : data(nullptr)
         {
             printf("\n%5sconstructed by default Mytype() data:nullptr", "");
         }
@@ -42,24 +43,45 @@ namespace dbj {
             printf("\n%5sconstructed with Mytype(const char *) data: '%s'", "", data);
         }
 
+        /// DESTRUCTING
         ~Mytype() noexcept {
             printf("\n%5sdestructed ~Mytype() with data: '%s'", "", data);
-            /* if (data) */
-            { free_data(data); /*data = nullptr;*/ }
+            /// CRITICAL: see the moving where data = nullptr
+            if (data) 
+            { free_data(data); data = nullptr; }
         }
 
-        // POINT: it is important
-        // to initialize the members, before anything else
+        /// MOVING
+        /// CRITICAL! Also called from inside std::swap
         Mytype(Mytype&& other) noexcept 
+           // this is ok but superfluous as member
+           // init `char * data{}` will be called if this is not here
+        : data(nullptr)
             //
             // CRITICAL! this is a bug
             // other and this might be the same object!
             //
             // : data(std::move(other.data))
         {
-            if ( this == & other )
-                     return ;
+            if ( this == & other ) return ;
 
+            std::swap( data, other.data ) ;
+            //
+            // CRITICAL! At this point using MSVC STL
+            // other.data == nullptr
+            // at least in debug build
+            //
+            // CRITICAL!
+            //  this is signal to the destructor 
+            // of the other object
+            // NOT to attempt freeing the moved from data
+            other.data = nullptr;
+            printf("\n%5smove constructed from: '%s'", "", data);
+        }
+        constexpr Mytype& operator =(Mytype&& other) noexcept 
+        {
+            if ( this == & other ) return *this ;
+            // this is pointer rewiring 
             std::swap( data, other.data ) ;
             //
             // CRITICAL!
@@ -67,27 +89,37 @@ namespace dbj {
             // of the other object
             // NOT to attempt freeing the moved from data
             other.data = nullptr;
-            printf("\n%5sconstructed with Mytype( Mytype && Mytype{}) ,  data: '%s'", "", data);
+            printf("\n%5smove assigned from: '%s'", "", data);
+            return *this ;
         }
-        /* */
+
+        /// COPYING
         Mytype(const Mytype& other_) noexcept
             // BUG! same as above : data(allocate_data(other_.data))
         {
-            if ( this == & other_ )
-                     return ;
+            if ( this == & other_ ) return ;
             data = allocate_data(other_.data);
-            printf("\n%5sconstructed  Mytype(const Mytype& other_), data: '%s'", "", data);
+            printf("\n%5scopy constructed from: '%s'", "", data);
         }
-        /// POINT: copy assignment operator is
-        /// required by the swap's
-        constexpr Mytype& operator=(const Mytype&) = default;
+
+        constexpr Mytype& operator=(const Mytype& other_ ) 
+        {
+              if ( this == &other_ ) return *this ;
+            data = allocate_data(other_.data);
+            printf("\n%5scopy assigned  from: '%s'", "", other_.data);
+            return *this ;
+        }
 
         // use swap to clearly show the intent
-        // swap is for swapping the values of this type
         // NOTE: std::iter_swap will call into here
         // just make sure ADL is respected
+        //
+        // Mytype *x, *y ;
+        // ... make them somehow ...
+        // std::iter_swap(x,y) ;
+        // 
         friend void swap(Mytype& a, Mytype& b) noexcept {
-           printf("\n swap( Mytype & a, Mytype & b)");
+           printf("\n swaping from: %s to: %s", b.data, a.data );
            std::swap(a.data, b.data);
         }
 
