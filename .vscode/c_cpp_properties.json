@@ -18,7 +18,9 @@
                 "D:\\Windows Kits\\10\\Include\\10.0.18362.0\\ucrt",
                 "D:\\Windows Kits\\10\\Include\\10.0.18362.0\\um",
                 "D:\\Windows Kits\\10\\Include\\10.0.18362.0\\shared",
-                "C:\\Program Files (x86)\\Visual Leak Detector\\include"
+                "C:\\Program Files (x86)\\Visual Leak Detector\\include",
+                "D:\\vcpkg\\installed\\x86-windows\\include\\Common",
+                "D:\\vcpkg\\installed\\x86-windows\\include"
             ]
         }
     ],

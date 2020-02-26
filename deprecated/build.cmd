@@ -4,6 +4,7 @@
 @rem of course Windows VCode has to start from msvc developer cmd
 @rem debug build on/off -- include/exclude argument -- /Zi
 @rem for /d2FH4 see https://devblogs.microsoft.com/cppblog/making-cpp-exception-handling-smaller-x64/
+@rem /JMC (Just My Code debugging)
 @rem
 
 if "%~1"=="R" goto RELEASE
@@ -18,13 +19,13 @@ goto HELP
 @echo.
 @echo Building for DEBUG -- no exceptions + runtime DLL
 @echo.
-cl  /std:c++17 /MDd -D_HAS_EXCEPTIONS=0 /Zi /Fe: academia_dbg.exe move_and_swap.cpp
+cl  /std:c++17 /I D:\vcpkg\installed\x86-windows\include\Common /I D:\vcpkg\installed\x86-windows\include  /MDd -D_HAS_EXCEPTIONS=0 /Zi /Fe: academia_dbg.exe main.cpp /link D:\vcpkg\installed\x86-windows\lib\eastl.lib
 goto EXIT
 :RELEASE
 @echo.
 @echo Building for RELEASE -- no exceptions and DLL runtime
 @echo.
-cl  /std:c++17 /MD -D_HAS_EXCEPTIONS=0 /Fe: academia.exe move_and_swap.cpp
+cl  /std:c++17 /MD -D_HAS_EXCEPTIONS=0 /Fe: academia.exe main.cpp
 goto EXIT
 :HELP
 @cls
