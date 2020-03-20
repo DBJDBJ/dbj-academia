@@ -174,11 +174,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
-    <ClInclude Include="fundamentol.h" />
     <ClInclude Include="mypod.h" />
-    <ClInclude Include="mytype.h" />
     <ClInclude Include="not_pod.h" />
-    <ClInclude Include="std_lib_types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

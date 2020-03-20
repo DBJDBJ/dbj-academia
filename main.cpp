@@ -30,13 +30,13 @@ int main(int, char**)
     
 // dbj::udt::testing();
 //
-//native_pointer_moving();
-//intrinsic_value_moving();
+// native_pointer_moving();
+// intrinsic_value_moving();
 //
-//dbj::array_swap();
-//dbj::natives_exchange();
-//std_move_shenanigans();
-//dbj::pause();
+// dbj::array_swap();
+// dbj::natives_exchange();
+// std_move_shenanigans();
+// dbj::pause();
 
     return 42;
  }
