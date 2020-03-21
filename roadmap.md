@@ -4,10 +4,12 @@
 
 1. #### pool allocator written in C
    - Good examples so far
-     - in C, seems [simple but workable](https://github.com/jobtalle/pool) 
+     - in C
+       - seems [simple but workable](https://github.com/jobtalle/pool) 
        - can be used as a key building block
      - [C++, but clean](https://github.com/cacay/MemoryPool) 
-        - (because it is not "modern" ) 
+        - because it is not "modern" and obfuscated
+        - [this fork](https://github.com/billyquith/MemoryPool) has benchmarking added
 
 ---------------------------------------------------------------------  
 
