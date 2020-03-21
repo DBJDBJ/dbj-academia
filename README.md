@@ -12,3 +12,7 @@ Supporting code
 Note : vld.h / vld.lib are from ["Visual Leak Detector"](https://kinddragon.github.io/vld/), being used. 
 Go to the Wiki page and read carefully the "Using..." section.
 
+
+---------------------------------------------------------------------  
+
+[![dbj();](https://dbj.org/wp-content/uploads/2015/12/cropped-dbj-icon-e1486129719897.jpg)](http://www.dbj.org "dbj")  
